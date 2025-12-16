@@ -33,18 +33,26 @@ jobs:
         with:
           filters: |
             env:
-              - 'env/inference.txt'
+              - 'env/train.txt'
 
       - name: Check ENV
         if : ${{ steps.changes.outputs.env == 'true' }}
-        run: echo ${ENV_INFERENCE}
-
+        run: echo ${ENV_TRAIN}
+  
   dev-deploy:
-    if : github.ref == 'refs/heads/main'
+    if : github.ref == 'refs/heads/main' && github.event.inputs.enviroment == 'dev'
     needs: [register-train]
     runs-on: ubuntu-latest
     steps:
       - name: Check DEV deploy
+        run: echo "FINISH DEPLOY TO ${{ github.event.inputs.enviroment }}"
+  
+  qas-deploy:
+    if : github.ref == 'refs/heads/main' && github.event.inputs.enviroment == 'qas'
+    needs: [dev-deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check QAS deploy
         run: echo "FINISH DEPLOY TO ${{ github.event.inputs.enviroment }}"
 
 # name: test ci
