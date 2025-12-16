@@ -38,9 +38,29 @@ jobs:
       - name: Check ENV
         if : ${{ steps.changes.outputs.env == 'true' }}
         run: echo ${ENV_TRAIN}
+
+  register-inference:
+    if : github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check ENV file changed
+        if: github.event_name == 'push'
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            env:
+              - 'env/inference.txt'
+
+      - name: Check ENV
+        if : ${{ steps.changes.outputs.env == 'true' }}
+        run: echo ${ENV_INFERENCE}
   
   dev-deploy:
-    if : github.ref == 'refs/heads/main' && github.event.inputs.enviroment == 'dev'
+    if : github.ref == 'refs/heads/main'
     needs: [register-train]
     runs-on: ubuntu-latest
     steps:
@@ -49,7 +69,7 @@ jobs:
   
   qas-deploy:
     if : github.ref == 'refs/heads/main' && github.event.inputs.enviroment == 'qas'
-    needs: [dev-deploy]
+    # needs: [dev-deploy]
     runs-on: ubuntu-latest
     steps:
       - name: Check QAS deploy
