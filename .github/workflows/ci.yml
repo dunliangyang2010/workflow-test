@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
       - name: Check file changed
         uses: dorny/paths-filter@v3
@@ -22,6 +24,7 @@ jobs:
           filters: |
             env:
               - 'env/train.txt'
+          base: HEAD~1
       - name: Check ENV
         if : ${{ steps.changes.outputs.env == 'true' }}
         run: echo ${ENV_TRAIN}
