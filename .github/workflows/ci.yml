@@ -20,6 +20,10 @@ jobs:
       - name: Show last commit
         run: git log -1 --oneline
 
+      - name: Find merge-base
+        id: mergebase
+        run: echo "MERGE_BASE=$(git merge-base HEAD refs/remotes/origin/main)" >> $GITHUB_ENV
+        
       - name: Check file changed
         uses: dorny/paths-filter@v3
         id: changes
@@ -27,7 +31,7 @@ jobs:
           filters: |
             env:
               - 'env/train.txt'
-          base: HEAD
+          base: ${{ env.MERGE_BASE }}
           
       - name: Check ENV
         if : ${{ steps.changes.outputs.env == 'true' }}
