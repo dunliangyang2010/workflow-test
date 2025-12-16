@@ -2,63 +2,112 @@ name: test ci
 
 on:
   workflow_dispatch:
-
-env:
-  ENV_TRAIN: "train-changed"
-  ENV_INFERENCE: "inference-changed"
+    inputs:
+      enviroment:
+        description: 'Enviroment to deply: dev/qas/prd'
+        required: true
+        default: 'dev'
+  push:
+    paths:
+      - 'env/train.txt'
+    branches:
+      - main
+  
+  env:
+    ENV_TRAIN: "train-changed"
+    ENV_INFERENCE: "inference-changed"
 
 jobs:
   register-train:
-    if : github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
-      
-      - name: Show last commit
-        run: git log -1 --oneline
-
-      - name: Check file changed
-        uses: dorny/paths-filter@v3
-        id: changes
-        with:
-          filters: |
-            env:
-              - 'env/train.txt'
-          base: HEAD~1
-          
-      - name: Check ENV
-        if : ${{ steps.changes.outputs.env == 'true' }}
-        run: echo ${ENV_TRAIN}
-
-  register-inference:
-    if : github.ref == 'refs/heads/main'
+    # if : github.event_name == 'workflow_dispatch' || steps.changes.outputs.env == 'true'
+    if : github.ref == 'refs/heads/main' || steps.changes.outputs.env == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Check file changed
+      - name: Check ENV file changed
+        if: github.event_name == 'push'
         uses: dorny/paths-filter@v3
         id: changes
         with:
           filters: |
             env:
               - 'env/inference.txt'
-            base: HEAD~1
+
       - name: Check ENV
         if : ${{ steps.changes.outputs.env == 'true' }}
         run: echo ${ENV_INFERENCE}
-  
+
   dev-deploy:
     if : github.ref == 'refs/heads/main'
-    needs: [register-train, register-inference]
+    needs: [register-train]
     runs-on: ubuntu-latest
     steps:
       - name: Check DEV deploy
-        run: echo "FINISH DEPLOY TO DEV"
+        run: echo "FINISH DEPLOY TO ${{ github.event.inputs.enviroment }}"
+
+# name: test ci
+
+# on:
+#   workflow_dispatch:
+
+# env:
+#   ENV_TRAIN: "train-changed"
+#   ENV_INFERENCE: "inference-changed"
+
+# jobs:
+#   register-train:
+#     if : github.ref == 'refs/heads/main'
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 1
+      
+#       - name: Show last commit
+#         run: git log -1 --oneline
+
+#       - name: Check file changed
+#         uses: dorny/paths-filter@v3
+#         id: changes
+#         with:
+#           filters: |
+#             env:
+#               - 'env/train.txt'
+#           base: HEAD~1
+          
+#       - name: Check ENV
+#         if : ${{ steps.changes.outputs.env == 'true' }}
+#         run: echo ${ENV_TRAIN}
+
+#   register-inference:
+#     if : github.ref == 'refs/heads/main'
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v3
+
+#       - name: Check file changed
+#         uses: dorny/paths-filter@v3
+#         id: changes
+#         with:
+#           filters: |
+#             env:
+#               - 'env/inference.txt'
+#             base: HEAD~1
+#       - name: Check ENV
+#         if : ${{ steps.changes.outputs.env == 'true' }}
+#         run: echo ${ENV_INFERENCE}
+  
+#   dev-deploy:
+#     if : github.ref == 'refs/heads/main'
+#     needs: [register-train, register-inference]
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Check DEV deploy
+#         run: echo "FINISH DEPLOY TO DEV"
 
   # qas-deploy:
   #   if : github.ref == 'refs/heads/test'
