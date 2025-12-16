@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
 
 env:
-  ENV_TRAIN: "train"
-  ENV_INFERENCE: "inference"
+  ENV_TRAIN: "train-changed"
+  ENV_INFERENCE: "inference-changed"
 
 jobs:
   register-train:
@@ -23,7 +23,7 @@ jobs:
             env:
               - 'env/train.txt'
       - name: Check ENV
-        if : steps.changes.outputs.env == 'true'
+        if : ${{ steps.changes.outputs.env == 'true' }}
         run: echo ${ENV_TRAIN}
 
   register-inference:
