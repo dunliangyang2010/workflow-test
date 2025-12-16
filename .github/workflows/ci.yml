@@ -61,7 +61,7 @@ jobs:
   
   dev-deploy:
     if : github.ref == 'refs/heads/main'
-    needs: [register-train]
+    needs: [register-train, register-inference]
     runs-on: ubuntu-latest
     steps:
       - name: Check DEV deploy
