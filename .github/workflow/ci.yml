@@ -1,0 +1,63 @@
+name: test ci
+
+on:
+  workflow_dispatch:
+
+env:
+  ENV_TRAIN: "train"
+  ENV_INFERENCE: "inference"
+
+jobs:
+  register-train:
+    if : github.ref == 'refs/heads/test'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check file changed
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            env:
+              - 'env/train.txt'
+      - name: Check ENV
+        if : steps.changes.outputs.env == 'true'
+        run: echo ${ENV_TRAIN}
+
+  # register-inference:
+  #   if : github.ref == 'refs/heads/test'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check file changed
+  #       uses: dorny/paths-filter@v3
+  #       id: changes
+  #       with:
+  #         filters: |
+  #           env:
+  #             - 'env/inference.txt'
+  #     - name: Check ENV
+  #       if : steps.changes.outputs.env == 'true'
+  #       run: echo ${ENV_INFERENCE}
+  
+  # dev-deploy:
+  #   if : github.ref == 'refs/heads/test'
+  #   needs: [register-train, register-inference]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check DEV deploy
+  #       run: echo "FINISH DEPLOY TO DEV"
+
+  # qas-deploy:
+  #   if : github.ref == 'refs/heads/test'
+  #   needs: [dev-deploy]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check QAS deploy
+  #       run: echo "FINISH DEPLOY TO QAS"
+
+  # prd-deploy:
+  #   if : github.ref == 'refs/heads/test'
+  #   needs: [qas-deploy]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Check PRD deploy
+  #       run: echo "FINISH DEPLOY TO PRD"
