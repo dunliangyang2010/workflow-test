@@ -17,37 +17,40 @@ jobs:
 
       - name: Check file changed
         uses: dorny/paths-filter@v3
-        id: filter
+        id: changes
         with:
           filters: |
             env:
               - 'env/train.txt'
       - name: Check ENV
-        if : steps.filter.outputs.env == 'true'
+        if : steps.changes.outputs.env == 'true'
         run: echo ${ENV_TRAIN}
 
-  # register-inference:
-  #   if : github.ref == 'refs/heads/test'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check file changed
-  #       uses: dorny/paths-filter@v3
-  #       id: changes
-  #       with:
-  #         filters: |
-  #           env:
-  #             - 'env/inference.txt'
-  #     - name: Check ENV
-  #       if : steps.changes.outputs.env == 'true'
-  #       run: echo ${ENV_INFERENCE}
+  register-inference:
+    if : github.ref == 'refs/heads/test'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check file changed
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            env:
+              - 'env/inference.txt'
+      - name: Check ENV
+        if : steps.changes.outputs.env == 'true'
+        run: echo ${ENV_INFERENCE}
   
-  # dev-deploy:
-  #   if : github.ref == 'refs/heads/test'
-  #   needs: [register-train, register-inference]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check DEV deploy
-  #       run: echo "FINISH DEPLOY TO DEV"
+  dev-deploy:
+    if : github.ref == 'refs/heads/test'
+    needs: [register-train, register-inference]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check DEV deploy
+        run: echo "FINISH DEPLOY TO DEV"
 
   # qas-deploy:
   #   if : github.ref == 'refs/heads/test'
