@@ -22,6 +22,7 @@ jobs:
           filters: |
             env:
               - 'env/train.txt'
+            base: HEAD~1
       - name: Check ENV
         if : ${{ steps.changes.outputs.env == 'true' }}
         run: echo ${ENV_TRAIN}
