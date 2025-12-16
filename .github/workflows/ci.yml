@@ -9,7 +9,7 @@ env:
 
 jobs:
   register-train:
-    if : github.ref == 'refs/heads/test'
+    if : github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -28,7 +28,7 @@ jobs:
         run: echo ${ENV_TRAIN}
 
   register-inference:
-    if : github.ref == 'refs/heads/test'
+    if : github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -41,12 +41,13 @@ jobs:
           filters: |
             env:
               - 'env/inference.txt'
+            base: HEAD~1
       - name: Check ENV
-        if : steps.changes.outputs.env == 'true'
+        if : ${{ steps.changes.outputs.env == 'true' }}
         run: echo ${ENV_INFERENCE}
   
   dev-deploy:
-    if : github.ref == 'refs/heads/test'
+    if : github.ref == 'refs/heads/main'
     needs: [register-train, register-inference]
     runs-on: ubuntu-latest
     steps:
