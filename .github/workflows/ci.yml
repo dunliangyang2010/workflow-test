@@ -20,7 +20,7 @@ jobs:
             env:
               - 'env/train.txt'
       - name: Check ENV
-        if : steps.changes.outputs.env == 'true'
+        if : ${steps.changes.outputs.env == 'true'}
         run: echo ${ENV_TRAIN}
 
   # register-inference:
