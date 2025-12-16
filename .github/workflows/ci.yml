@@ -15,13 +15,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 1
       
-      - name: Fetch all commits
-        run: git fetch --no-tags --all
-
-      - name: Show last 2 commits
-        run: git log -2 --oneline
+      - name: Show last commit
+        run: git log -1 --oneline
 
       - name: Check file changed
         uses: dorny/paths-filter@v3
@@ -30,7 +27,8 @@ jobs:
           filters: |
             env:
               - 'env/train.txt'
-          base: HEAD~1
+          base: HEAD
+          
       - name: Check ENV
         if : ${{ steps.changes.outputs.env == 'true' }}
         run: echo ${ENV_TRAIN}
