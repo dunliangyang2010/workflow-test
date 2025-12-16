@@ -13,9 +13,9 @@ on:
     branches:
       - main
   
-  env:
-    ENV_TRAIN: "train-changed"
-    ENV_INFERENCE: "inference-changed"
+env:
+  ENV_TRAIN: "train-changed"
+  ENV_INFERENCE: "inference-changed"
 
 jobs:
   register-train:
