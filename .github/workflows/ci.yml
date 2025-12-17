@@ -20,7 +20,8 @@ env:
 jobs:
   register-train:
     # if : github.event_name == 'workflow_dispatch' || steps.changes.outputs.env == 'true'
-    if : github.ref == 'refs/heads/main'
+    # if : github.ref == 'refs/heads/main'
+    if : github.ref == 'refs/heads/main' && (github.event.inputs.enviroment == 'dev' || github.event.inputs.enviroment == '')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
