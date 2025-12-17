@@ -28,7 +28,7 @@ jobs:
   register-train:
     # if : github.event_name == 'workflow_dispatch' || steps.changes.outputs.env == 'true'
     # if : github.ref == 'refs/heads/main'
-    if : github.ref == 'refs/heads/main' && (github.event.inputs.enviroment == 'dev' || github.event.inputs.enviroment == '')
+    if: ${{ github.ref == 'refs/heads/main' && (github.event.inputs.environment == 'dev' || github.event.inputs.environment == '') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -44,11 +44,11 @@ jobs:
               - 'env/train.txt'
 
       - name: Check ENV
-        if : ${{ steps.changes.outputs.env == 'true' }}
+        if: ${{ steps.changes.outputs.env == 'true' }}
         run: echo ${ENV_TRAIN}
 
   register-inference:
-    if : github.ref == 'refs/heads/main'
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -68,21 +68,23 @@ jobs:
         run: echo ${ENV_INFERENCE}
   
   dev-deploy:
-    if : github.ref == 'refs/heads/main'
+    if: ${{ github.ref == 'refs/heads/main' }}
     needs: [register-train, register-inference]
     runs-on: ubuntu-latest
     steps:
       - name: Check DEV deploy
-        run: echo "FINISH DEPLOY TO ${{ github.event.inputs.enviroment }}"
+        run: echo "FINISH DEPLOY TO ${{ github.event.inputs.environment }}"
 
       - name: Check submodule
         uses: actions/checkout@v3
         with:
           submodules: recursive
+      
+      - name: Read submodule file
         run: python read.py
   
   qas-deploy:
-    if : github.ref == 'refs/heads/main' && github.event.inputs.enviroment == 'qas'
+    if: ${{ github.ref == 'refs/heads/main' && github.event.inputs.environment == 'qas' }}
     # needs: [dev-deploy]
     runs-on: ubuntu-latest
     steps:
