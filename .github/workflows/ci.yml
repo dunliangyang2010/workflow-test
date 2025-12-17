@@ -3,8 +3,8 @@ name: test ci
 on:
   workflow_dispatch:
     inputs:
-      enviroment:
-        description: 'Enviroment to deply: dev/qas/prd'
+      environment:
+        description: 'Environment to deply: dev/qas/prd'
         required: true
         default: 'dev'
       label:
@@ -14,10 +14,11 @@ on:
   push:
     paths:
       - 'env/train.txt'
+      - 'env/inference.txt'
     branches:
       - main
 
-run-name: Commit: ${{ github.event.head_commit.message || github.event.inputs.label }}
+run-name: github.event.inputs.label
 
 env:
   ENV_TRAIN: "train-changed"
