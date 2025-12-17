@@ -7,12 +7,18 @@ on:
         description: 'Enviroment to deply: dev/qas/prd'
         required: true
         default: 'dev'
+      label:
+        description: 'Label for deploy'
+        required: false
+        default: 're-build'
   push:
     paths:
       - 'env/train.txt'
     branches:
       - main
-  
+
+run-name: Commit: ${{ github.event.head_commit.message || github.event.inputs.label }}
+
 env:
   ENV_TRAIN: "train-changed"
   ENV_INFERENCE: "inference-changed"
@@ -67,6 +73,12 @@ jobs:
     steps:
       - name: Check DEV deploy
         run: echo "FINISH DEPLOY TO ${{ github.event.inputs.enviroment }}"
+
+      - name: Check submodule
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+        run: python read.py
   
   qas-deploy:
     if : github.ref == 'refs/heads/main' && github.event.inputs.enviroment == 'qas'
