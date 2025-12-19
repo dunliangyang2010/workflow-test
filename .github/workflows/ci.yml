@@ -23,9 +23,6 @@ on:
 env:
   ENV_TRAIN: "train-changed"
   ENV_INFERENCE: "inference-changed"
-  GIT_LOG: ${{ git log -1 --pretty=format:"%s" }}
-
-run-name: $ {{ GIT_LOG }}
 
 jobs:
   register-train:
@@ -49,6 +46,13 @@ jobs:
       - name: Check ENV
         if: ${{ steps.changes.outputs.env == 'true' }}
         run: echo ${ENV_TRAIN}
+
+      - name: Get latest commit message
+        id : git-log
+        run: |
+          echo "COMMIT_MSG=$(git log -1 --pretty=%B)" >> $GIT_LOG
+    name: ${{ env.COMMIT_MSG }}
+
 
   register-inference:
     if: ${{ github.ref == 'refs/heads/main' }}
