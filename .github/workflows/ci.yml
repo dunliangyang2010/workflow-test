@@ -18,11 +18,14 @@ on:
     branches:
       - main
 
-run-name: ${{ github.event.inputs.label }}
+# run-name: ${{ github.event.inputs.label }}
 
 env:
   ENV_TRAIN: "train-changed"
   ENV_INFERENCE: "inference-changed"
+  GIT_LOG: ${{ git log -1 --pretty=format:"%s" }}
+
+run-name: $ {{ GIT_LOG }}
 
 jobs:
   register-train:
