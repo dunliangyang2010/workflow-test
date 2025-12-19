@@ -30,6 +30,8 @@ jobs:
     # if : github.ref == 'refs/heads/main'
     if: ${{ github.ref == 'refs/heads/main' && (github.event.inputs.environment == 'dev' || github.event.inputs.environment == '') }}
     runs-on: ubuntu-latest
+    outputs:
+      commit_message: ${{ steps.git-log.outputs.message }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -104,7 +106,7 @@ jobs:
         run: echo "FINISH DEPLOY TO ${{ github.event.inputs.enviroment }}"
 
 # run-name: ${{ jobs.register-train.steps.git-log.outputs.message }}
-run-name: ${{ jobs.register-train.steps.outputs.message }}
+run-name: ${{ jobs.register-train.outputs.commit_message }}
 
 # name: test ci
 
