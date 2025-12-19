@@ -54,7 +54,7 @@ jobs:
         shell: bash
 
       - name: Show commit message
-        run: echo "Latest commit message: ${{ steps.git-log.outputs.message }}"
+        run: echo "Latest commit message ${{ steps.git-log.outputs.message }}"
 
 
   register-inference:
