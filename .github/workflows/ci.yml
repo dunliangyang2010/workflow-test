@@ -50,8 +50,11 @@ jobs:
       - name: Get latest commit message
         id : git-log
         run: |
-          echo "COMMIT_MSG=$(git log -1 --pretty=%B)" >> $GIT_LOG
-    name: ${{ env.COMMIT_MSG }}
+          echo "::set-output name=message::$(git log -1 --pretty=%B)"
+        shell: bash
+
+      - name: Show commit message
+        run: echo "Latest commit message: ${{ steps.git-log.outputs.message }}"
 
 
   register-inference:
@@ -99,6 +102,9 @@ jobs:
     steps:
       - name: Check QAS deploy
         run: echo "FINISH DEPLOY TO ${{ github.event.inputs.enviroment }}"
+
+# run-name: ${{ jobs.register-train.steps.git-log.outputs.message }}
+run-name: ${{ jobs.register-train.steps.outputs.message }}
 
 # name: test ci
 
